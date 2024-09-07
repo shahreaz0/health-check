@@ -15,6 +15,8 @@ export async function create(options: Options) {
     const file = await fs.open(path, "w")
 
     await fs.writeFile(file, JSON.stringify(options.data))
+
+    await file.close()
   } catch (error) {
     console.log(error)
   }

@@ -11,7 +11,8 @@
     "typescript": "^5.5.4"
   },
   "scripts": {
-    "dev": "tsx --watch server.ts"
+    "dev": "tsx --watch server.ts",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": ["uptime", "monitor"],
   "author": "shahreaz",

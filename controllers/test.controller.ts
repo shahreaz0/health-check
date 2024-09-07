@@ -1,4 +1,4 @@
-import type { Request, ResponseCallBack } from "../server"
+import type { Request, ResponseCallBack } from "../types/server-types"
 
 export function testController(req: Request, callback: ResponseCallBack) {
   console.log("hello")

@@ -5,28 +5,11 @@ import { cleanPath } from "./lib/utils"
 import { routes } from "./routes"
 
 import { create } from "./lib/fs"
+import type { App } from "./types/server-types"
 
 create({ data: { name: "shahreaz" } })
 
 //
-
-type App = {
-  createServer?: () => void
-  requestHandler?: Parameters<typeof http.createServer>[1]
-}
-
-export type Request = {
-  url: URL
-  cleanPathname: string
-  queryParams: {
-    [k: string]: string
-  }
-  method: string | undefined
-  headers: http.IncomingHttpHeaders
-  body: string
-}
-
-export type ResponseCallBack = (statusCode: number, responseObj: object) => void
 
 const app: App = {}
 
