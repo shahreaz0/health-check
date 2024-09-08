@@ -9,3 +9,13 @@ export function cleanPath(pathname: string) {
 
   return cleanedPath
 }
+
+export function parseJson(json: string) {
+  let output: object
+
+  try {
+    output = JSON.parse(json)
+  } catch (_error) {
+    output = {}
+  }
+}

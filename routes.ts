@@ -1,5 +1,5 @@
-import { testController } from "./controllers/test.controller"
+import { userController } from "./controllers/user.controller"
 
 export const routes = {
-  "/test": testController,
+  "/users": userController,
 }

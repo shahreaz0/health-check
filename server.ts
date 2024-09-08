@@ -4,12 +4,7 @@ import { notFound } from "./controllers/error.controller"
 import { cleanPath } from "./lib/utils"
 import { routes } from "./routes"
 
-import { create } from "./lib/fs"
 import type { App } from "./types/server-types"
-
-create({ data: { name: "shahreaz" } })
-
-//
 
 const app: App = {}
 
@@ -44,13 +39,14 @@ app.requestHandler = (req, res) => {
       queryParams,
       method,
       headers,
-      body: Buffer.concat(body).toString(),
+      body: JSON.parse(Buffer.concat(body).toString() || "{}"),
     }
 
     selectedRoute(request, (statusCode, response) => {
       const code = typeof statusCode === "number" ? statusCode : 500
       const ress = typeof response === "object" ? response : {}
 
+      res.setHeader("Content-Type", "application/json")
       res.writeHead(code)
       res.end(JSON.stringify(ress))
     })
