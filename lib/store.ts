@@ -11,9 +11,11 @@ export async function createStore(options: Options) {
   try {
     const dir = options?.dir ? `/${options.dir}` : ""
     const filename = options?.filename || "data.json"
-    const filePath = path.join(import.meta.dirname, "..", ".data", dir, filename)
 
-    const fileHandler = await fs.open(filePath, "wx")
+    const filePath = path.join(import.meta.dirname, "..", ".data", dir, filename)
+    console.log(filePath)
+
+    const fileHandler = await fs.open(filePath, "w")
 
     await fileHandler.writeFile(JSON.stringify(options.data))
 
