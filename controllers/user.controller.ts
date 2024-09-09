@@ -1,9 +1,8 @@
-import { createStore } from "../lib/store"
+import { createStore, readStore } from "../lib/store"
+import { hashPassword, validatePhone, validateString } from "../lib/utils"
 import type { Request, ResponseCallBack } from "../types/server-types"
 
 export function userController(req: Request, callback: ResponseCallBack) {
-  console.log("hello")
-
   if (!["get", "post", "put", "delete"].includes(req.method as string)) {
     return callback(405, {
       message: "method not allowed",
@@ -14,10 +13,28 @@ export function userController(req: Request, callback: ResponseCallBack) {
 }
 
 const controller = {
-  get: (req: Request, callback: ResponseCallBack) => {
-    callback(200, {
-      message: "get user",
-    })
+  get: async (req: Request, callback: ResponseCallBack) => {
+    const phone = req.url.searchParams.get("phone")
+
+    if (!validatePhone(phone)) {
+      return callback(404, {
+        message: "Enter valid input",
+      })
+    }
+
+    try {
+      const data = await readStore({ dir: "users", filename: `${phone}.json` })
+
+      const { password, ...rest } = data
+
+      callback(200, {
+        data: rest,
+      })
+    } catch (error) {
+      return callback(404, {
+        message: "Not found",
+      })
+    }
   },
   post: async (
     req: Request<{ firstName: string; lastName: string; phone: string; password: string }>,
@@ -27,15 +44,27 @@ const controller = {
       const v = req.body[p as keyof typeof req.body]
 
       if (p === "phone") {
-        return typeof v === "string" && v.trim().length === 11
+        return validatePhone(v)
       }
 
-      return typeof v === "string" && v.trim().length > 0
+      return validateString(v)
     })
 
-    if (isValidInput) {
-      await createStore({ dir: "users", filename: `${req.body.phone}.json`, data: req.body })
+    if (!isValidInput) {
+      callback(404, {
+        message: "Inter valid input",
+      })
     }
+
+    const hashedPassword = hashPassword(req.body.password)
+
+    const { password, ...rest } = req.body
+
+    await createStore({
+      dir: "users",
+      filename: `${req.body.phone}.json`,
+      data: { ...rest, password: hashedPassword },
+    })
 
     callback(201, {
       message: "user created",

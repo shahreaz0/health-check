@@ -36,7 +36,8 @@ export async function readStore(options: Omit<Options, "data"> = {}) {
 
     return JSON.parse(data)
   } catch (error) {
-    console.log(error)
+    // biome-ignore lint/complexity/noUselessCatch: <explanation>
+    throw error
   }
 }
 

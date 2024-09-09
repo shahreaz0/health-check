@@ -1,3 +1,5 @@
+import { pbkdf2Sync, randomBytes } from "node:crypto"
+
 export function cleanPath(pathname: string) {
   // Step 1: Replace multiple consecutive slashes with a single slash
   let cleanedPath = pathname.replace(/\/{2,}/g, "/")
@@ -18,4 +20,27 @@ export function parseJson(json: string) {
   } catch (_error) {
     output = {}
   }
+}
+
+export function hashPassword(password: string): string {
+  const salt = randomBytes(16).toString("hex")
+  const hash = pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex")
+
+  return `${salt}$${hash}`
+}
+
+export function verifyPassword(password: string, storedHash: string): boolean {
+  const [salt, originalHash] = storedHash.split("$")
+
+  const hashToVerify = pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex")
+
+  return hashToVerify === originalHash
+}
+
+export function validateString(v: unknown) {
+  return typeof v === "string" && v.trim().length > 0
+}
+
+export function validatePhone(v: unknown) {
+  return typeof v === "string" && v.trim().length === 11
 }
