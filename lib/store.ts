@@ -43,8 +43,6 @@ export async function readStore(options: Omit<Options, "data"> = {}) {
 
 export async function updateStore(options: Options) {
   try {
-    console.log("hello")
-
     const dir = options?.dir ? `/${options.dir}` : ""
     const filename = options?.filename || "data.json"
     const filePath = path.join(import.meta.dirname, "..", ".data", dir, filename)
@@ -56,6 +54,8 @@ export async function updateStore(options: Options) {
     await fileHandler.writeFile(JSON.stringify(options.data))
 
     await fileHandler.close()
+
+    return options.data
   } catch (error) {
     console.log(error)
   }

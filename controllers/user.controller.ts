@@ -1,4 +1,4 @@
-import { createStore, readStore } from "../lib/store"
+import { createStore, readStore, updateStore } from "../lib/store"
 import { hashPassword, validatePhone, validateString } from "../lib/utils"
 import type { Request, ResponseCallBack } from "../types/server-types"
 
@@ -71,6 +71,62 @@ const controller = {
       body: req.body,
     })
   },
-  put: () => {},
+  put: async (
+    req: Request<{ firstName: string; lastName: string; password: string }>,
+    callback: ResponseCallBack,
+  ) => {
+    const phone = req.queryParams.phone
+
+    if (!validatePhone(phone)) {
+      return callback(400, {
+        message: "Invalid phone number or phone number missing",
+      })
+    }
+
+    const isValidInput = ["firstName", "lastName", "password"].some((p) => {
+      const v = req.body[p as keyof typeof req.body]
+
+      return validateString(v)
+    })
+
+    if (isValidInput) {
+      try {
+        const data = await readStore({ dir: "users", filename: `${phone}.json` })
+
+        console.log(data)
+
+        if (data.firstname) {
+          data.firstName = req.body.firstName
+        }
+        if (data.lastName) {
+          data.lastName = req.body.lastName
+        }
+        if (data.password) {
+          data.password = hashPassword(req.body.password)
+        }
+
+        const d = await updateStore({ dir: "users", filename: `${phone}.json`, data })
+
+        callback(200, {
+          message: "user updated",
+          body: d,
+        })
+      } catch (error) {
+        return callback(404, {
+          message: "User not found.",
+        })
+      }
+    }
+
+    // const hashedPassword = hashPassword(req.body.password)
+
+    // const { password, ...rest } = req.body
+
+    // await createStore({
+    //   dir: "users",
+    //   filename: `${req.body.phone}.json`,
+    //   data: { ...rest, password: hashedPassword },
+    // })
+  },
   delete: () => {},
 }
