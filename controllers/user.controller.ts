@@ -1,4 +1,4 @@
-import { createStore, readStore, updateStore } from "../lib/store"
+import { createStore, deleteStore, readStore, updateStore } from "../lib/store"
 import { hashPassword, validatePhone, validateString } from "../lib/utils"
 import type { Request, ResponseCallBack } from "../types/server-types"
 
@@ -51,7 +51,7 @@ const controller = {
     })
 
     if (!isValidInput) {
-      callback(404, {
+      return callback(404, {
         message: "Inter valid input",
       })
     }
@@ -128,5 +128,38 @@ const controller = {
     //   data: { ...rest, password: hashedPassword },
     // })
   },
-  delete: () => {},
+  delete: async (
+    req: Request<{ firstName: string; lastName: string; password: string }>,
+    callback: ResponseCallBack,
+  ) => {
+    const phone = req.queryParams.phone
+
+    if (!validatePhone(phone)) {
+      return callback(400, {
+        message: "Invalid phone number or phone number missing",
+      })
+    }
+
+    try {
+      await deleteStore({ dir: "users", filename: `${phone}.json` })
+
+      callback(200, {
+        message: "user deleted",
+      })
+    } catch (error) {
+      return callback(404, {
+        message: "User not found.",
+      })
+    }
+
+    // const hashedPassword = hashPassword(req.body.password)
+
+    // const { password, ...rest } = req.body
+
+    // await createStore({
+    //   dir: "users",
+    //   filename: `${req.body.phone}.json`,
+    //   data: { ...rest, password: hashedPassword },
+    // })
+  },
 }
