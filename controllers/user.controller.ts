@@ -1,6 +1,7 @@
 import { createStore, deleteStore, readStore, updateStore } from "../lib/store"
 import { hashPassword, validatePhone, validateString } from "../lib/utils"
-import type { Request, ResponseCallBack } from "../types/server-types"
+import type { Request, ResponseCallBack } from "../types/server"
+import type { User } from "../types/user"
 
 export function userController(req: Request, callback: ResponseCallBack) {
   if (!["get", "post", "put", "delete"].includes(req.method as string)) {
@@ -36,10 +37,7 @@ const controller = {
       })
     }
   },
-  post: async (
-    req: Request<{ firstName: string; lastName: string; phone: string; password: string }>,
-    callback: ResponseCallBack,
-  ) => {
+  post: async (req: Request<User>, callback: ResponseCallBack) => {
     const isValidInput = ["firstName", "lastName", "phone", "password"].every((p) => {
       const v = req.body[p as keyof typeof req.body]
 
@@ -128,10 +126,7 @@ const controller = {
     //   data: { ...rest, password: hashedPassword },
     // })
   },
-  delete: async (
-    req: Request<{ firstName: string; lastName: string; password: string }>,
-    callback: ResponseCallBack,
-  ) => {
+  delete: async (req: Request<Omit<User, "phone">>, callback: ResponseCallBack) => {
     const phone = req.queryParams.phone
 
     if (!validatePhone(phone)) {
@@ -151,15 +146,5 @@ const controller = {
         message: "User not found.",
       })
     }
-
-    // const hashedPassword = hashPassword(req.body.password)
-
-    // const { password, ...rest } = req.body
-
-    // await createStore({
-    //   dir: "users",
-    //   filename: `${req.body.phone}.json`,
-    //   data: { ...rest, password: hashedPassword },
-    // })
   },
 }

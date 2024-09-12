@@ -1,4 +1,4 @@
-import type { Request, ResponseCallBack } from "../types/server-types"
+import type { Request, ResponseCallBack } from "../types/server"
 
 export function notFound(req: Request, callback: ResponseCallBack) {
   console.log("not found")

@@ -5,8 +5,6 @@ export type App = {
   requestHandler?: Parameters<typeof http.createServer>[1]
 }
 
-type A = Request<{}>
-
 type RequestWithoutBody = {
   url: URL
   cleanPathname: string

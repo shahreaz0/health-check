@@ -25,7 +25,7 @@ export async function createStore(options: Options) {
   }
 }
 
-export async function readStore(options: Omit<Options, "data"> = {}) {
+export async function readStore<T = any>(options: Omit<Options, "data"> = {}) {
   try {
     const dir = options?.dir ? `/${options.dir}` : ""
     const filename = options?.filename || "data.json"
@@ -34,7 +34,7 @@ export async function readStore(options: Omit<Options, "data"> = {}) {
     //
     const data = await fs.readFile(filePath, "utf8")
 
-    return JSON.parse(data)
+    return JSON.parse(data) as T
   } catch (error) {
     // biome-ignore lint/complexity/noUselessCatch: <explanation>
     throw error

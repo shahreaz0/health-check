@@ -44,3 +44,16 @@ export function validateString(v: unknown) {
 export function validatePhone(v: unknown) {
   return typeof v === "string" && v.trim().length === 11
 }
+
+export function generateId(length = 20) {
+  const tokens = "abcdefghijklmnopqrstuvwxyz1234567890"
+  let id = ""
+
+  for (let index = 0; index < length; index++) {
+    id += tokens.split("")[Math.floor(Math.random() * tokens.length)]
+  }
+
+  return id
+}
+
+console.log(generateId())
