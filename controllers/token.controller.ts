@@ -1,4 +1,4 @@
-import { readStore } from "../lib/store"
+import { createStore, readStore } from "../lib/store"
 import { generateId, validatePhone, validateString, verifyPassword } from "../lib/utils"
 import type { Request, ResponseCallBack } from "../types/server"
 import type { User } from "../types/user"
@@ -64,13 +64,17 @@ const controller = {
       const tokenId = generateId()
       const expires = Date.now() * 60 * 60 * 1000
 
+      const token = {
+        id: tokenId,
+        expires,
+        phone: user.phone,
+      }
+
+      await createStore({ data: token, dir: "tokens", filename: `${tokenId},json` })
+
       callback(200, {
         message: "token created",
-        token: {
-          id: tokenId,
-          expires,
-          phone: user.phone,
-        },
+        token,
       })
     } catch (error) {
       //
