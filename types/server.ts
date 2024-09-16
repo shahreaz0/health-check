@@ -5,7 +5,7 @@ export type App = {
   requestHandler?: Parameters<typeof http.createServer>[1]
 }
 
-type RequestWithoutBody = {
+export type Request<ReqBody = any> = {
   url: URL
   cleanPathname: string
   queryParams: {
@@ -13,20 +13,7 @@ type RequestWithoutBody = {
   }
   method: string | undefined
   headers: http.IncomingHttpHeaders
-  body: any
+  body: ReqBody
 }
-
-type RequestWithBody<T> = {
-  url: URL
-  cleanPathname: string
-  queryParams: {
-    [k: string]: string
-  }
-  method: string | undefined
-  headers: http.IncomingHttpHeaders
-  body: T
-}
-
-export type Request<T = void> = T extends void ? RequestWithoutBody : RequestWithBody<T>
 
 export type ResponseCallBack = (statusCode: number, responseObj: object) => void

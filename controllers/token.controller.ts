@@ -1,5 +1,11 @@
 import { createStore, readStore } from "../lib/store"
-import { generateId, validatePhone, validateString, verifyPassword } from "../lib/utils"
+import {
+  generateId,
+  validatePhone,
+  validateString,
+  validateToken,
+  verifyPassword,
+} from "../lib/utils"
 import type { Request, ResponseCallBack } from "../types/server"
 import type { User } from "../types/user"
 
@@ -15,25 +21,23 @@ export function tokenController(req: Request, callback: ResponseCallBack) {
 
 const controller = {
   get: async (req: Request, callback: ResponseCallBack) => {
-    const phone = req.url.searchParams.get("phone")
+    const token = req.url.searchParams.get("token")
 
-    if (!validatePhone(phone)) {
+    if (!validateToken(token)) {
       return callback(404, {
-        message: "Enter valid input",
+        message: "Enter valid token",
       })
     }
 
     try {
-      const data = await readStore({ dir: "users", filename: `${phone}.json` })
-
-      const { password, ...rest } = data
+      const data = await readStore({ dir: "tokens", filename: `${token}.json` })
 
       callback(200, {
-        data: rest,
+        data,
       })
     } catch (error) {
       return callback(404, {
-        message: "Not found",
+        message: "Not Found",
       })
     }
   },
@@ -70,15 +74,13 @@ const controller = {
         phone: user.phone,
       }
 
-      await createStore({ data: token, dir: "tokens", filename: `${tokenId},json` })
+      await createStore({ data: token, dir: "tokens", filename: `${tokenId}.json` })
 
       callback(200, {
         message: "token created",
         token,
       })
     } catch (error) {
-      //
-
       return callback(400, { message: error instanceof Error && error.message })
     }
   },

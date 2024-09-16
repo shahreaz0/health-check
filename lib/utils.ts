@@ -44,6 +44,9 @@ export function validateString(v: unknown) {
 export function validatePhone(v: unknown) {
   return typeof v === "string" && v.trim().length === 11
 }
+export function validateToken(v: unknown) {
+  return typeof v === "string" && v.trim().length === 20
+}
 
 export function generateId(length = 20) {
   const tokens = "abcdefghijklmnopqrstuvwxyz1234567890"

@@ -21,7 +21,8 @@ export async function createStore(options: Options) {
 
     await fileHandler.close()
   } catch (error) {
-    console.log(error)
+    // biome-ignore lint/complexity/noUselessCatch: <explanation>
+    throw error
   }
 }
 
