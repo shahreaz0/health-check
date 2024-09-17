@@ -6,9 +6,9 @@ import {
   validateToken,
   verifyPassword,
 } from "../lib/utils"
-import type { Request, ResponseCallBack } from "../types/server"
-import type { Token } from "../types/token"
-import type { User } from "../types/user"
+import type { Request, ResponseCallBack } from "../types/server..type"
+import type { Token } from "../types/token.type."
+import type { User } from "../types/user.type"
 
 export function tokenController(req: Request, callback: ResponseCallBack) {
   if (!["get", "post", "put", "delete"].includes(req.method as string)) {

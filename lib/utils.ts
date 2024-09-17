@@ -1,5 +1,5 @@
 import { pbkdf2Sync, randomBytes } from "node:crypto"
-import type { Token } from "../types/token"
+import type { Token } from "../types/token.type."
 import { readStore } from "./store"
 
 export function cleanPath(pathname: string) {

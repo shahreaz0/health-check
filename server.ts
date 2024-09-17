@@ -4,7 +4,7 @@ import { notFound } from "./controllers/error.controller"
 import { cleanPath } from "./lib/utils"
 import { routes } from "./routes"
 
-import type { App } from "./types/server"
+import type { App } from "./types/server..type"
 
 const app: App = {}
 
