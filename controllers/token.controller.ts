@@ -1,4 +1,4 @@
-import { createStore, readStore } from "../lib/store"
+import { createStore, deleteStore, readStore, updateStore } from "../lib/store"
 import {
   generateId,
   validatePhone,
@@ -7,6 +7,7 @@ import {
   verifyPassword,
 } from "../lib/utils"
 import type { Request, ResponseCallBack } from "../types/server"
+import type { Token } from "../types/token"
 import type { User } from "../types/user"
 
 export function tokenController(req: Request, callback: ResponseCallBack) {
@@ -66,7 +67,7 @@ const controller = {
       }
 
       const tokenId = generateId()
-      const expires = Date.now() * 60 * 60 * 1000
+      const expires = Date.now() + 60 * 60 * 1000
 
       const token = {
         id: tokenId,
@@ -84,6 +85,66 @@ const controller = {
       return callback(400, { message: error instanceof Error && error.message })
     }
   },
-  put: async (req: Request, callback: ResponseCallBack) => {},
-  delete: async (req: Request, callback: ResponseCallBack) => {},
+  put: async (req: Request<{ extend: boolean }>, callback: ResponseCallBack) => {
+    if (!validateToken(req.queryParams.id)) {
+      return callback(400, {
+        message: "Enter valid token",
+      })
+    }
+
+    if (typeof req.body.extend === "boolean" && !req.body.extend) {
+      return callback(400, {
+        message: "extend is missing",
+      })
+    }
+
+    try {
+      const token = await readStore<Token>({
+        dir: "tokens",
+        filename: `${req.queryParams.id}.json`,
+      })
+
+      if (token.expires < Date.now()) {
+        return callback(400, {
+          message: "Token already expired",
+        })
+      }
+
+      token.expires = Date.now() + 60 * 60 * 1000
+
+      const newToken = await updateStore({
+        dir: "tokens",
+        filename: `${req.queryParams.id}.json`,
+        data: token,
+      })
+
+      callback(200, {
+        message: "token updated",
+        token: newToken,
+      })
+    } catch (error) {
+      return callback(400, { message: error instanceof Error && error.message })
+    }
+  },
+  delete: async (req: Request, callback: ResponseCallBack) => {
+    const id = req.queryParams.id
+
+    if (!validateToken(id)) {
+      return callback(400, {
+        message: "Invalid token or token missing",
+      })
+    }
+
+    try {
+      await deleteStore({ dir: "token", filename: `${id}.json` })
+
+      callback(200, {
+        message: "token deleted",
+      })
+    } catch (error) {
+      return callback(404, {
+        message: "Token not found.",
+      })
+    }
+  },
 }

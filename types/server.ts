@@ -5,14 +5,14 @@ export type App = {
   requestHandler?: Parameters<typeof http.createServer>[1]
 }
 
-export type Request<ReqBody = any> = {
+export type Request<ReqBody = any, ReqHeader = any> = {
   url: URL
   cleanPathname: string
   queryParams: {
     [k: string]: string
   }
   method: string | undefined
-  headers: http.IncomingHttpHeaders
+  headers: any extends ReqHeader ? http.IncomingHttpHeaders : ReqHeader
   body: ReqBody
 }
 

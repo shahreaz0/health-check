@@ -1,4 +1,6 @@
 import { pbkdf2Sync, randomBytes } from "node:crypto"
+import type { Token } from "../types/token"
+import { readStore } from "./store"
 
 export function cleanPath(pathname: string) {
   // Step 1: Replace multiple consecutive slashes with a single slash
@@ -59,4 +61,17 @@ export function generateId(length = 20) {
   return id
 }
 
-console.log(generateId())
+export async function verifyToken(opt: { id: string; phone: string }) {
+  try {
+    const token = await readStore<Token>({ dir: "tokens", filename: `${opt.id}.json` })
+
+    if (token.phone === opt.phone && token.expires > Date.now()) {
+      return true
+    }
+
+    return false
+  } catch (error) {
+    //
+    console.log(error)
+  }
+}

@@ -1,5 +1,11 @@
 import { createStore, deleteStore, readStore, updateStore } from "../lib/store"
-import { hashPassword, validatePhone, validateString } from "../lib/utils"
+import {
+  hashPassword,
+  validatePhone,
+  validateString,
+  validateToken,
+  verifyToken,
+} from "../lib/utils"
 import type { Request, ResponseCallBack } from "../types/server"
 import type { User } from "../types/user"
 
@@ -14,7 +20,7 @@ export function userController(req: Request, callback: ResponseCallBack) {
 }
 
 const controller = {
-  get: async (req: Request, callback: ResponseCallBack) => {
+  get: async (req: Request<object, { token: string }>, callback: ResponseCallBack) => {
     const phone = req.url.searchParams.get("phone")
 
     if (!validatePhone(phone)) {
@@ -23,7 +29,21 @@ const controller = {
       })
     }
 
+    if (!validateToken(req.headers.token)) {
+      return callback(400, {
+        message: "Invalid token",
+      })
+    }
+
     try {
+      const valid = await verifyToken({ id: req.headers.token as string, phone: phone as string })
+
+      if (!valid) {
+        return callback(401, {
+          message: "Unauthorize",
+        })
+      }
+
       const data = await readStore({ dir: "users", filename: `${phone}.json` })
 
       const { password, ...rest } = data
@@ -81,39 +101,55 @@ const controller = {
       })
     }
 
+    if (!validateToken(req.headers.token)) {
+      return callback(400, {
+        message: "Invalid token",
+      })
+    }
+
     const isValidInput = ["firstName", "lastName", "password"].some((p) => {
       const v = req.body[p as keyof typeof req.body]
 
       return validateString(v)
     })
 
-    if (isValidInput) {
-      try {
-        const data = await readStore({ dir: "users", filename: `${phone}.json` })
+    if (!isValidInput) {
+      return callback(400, {
+        message: "Enter valid input",
+      })
+    }
 
-        console.log(data)
+    try {
+      const valid = await verifyToken({ id: req.headers.token as string, phone: phone as string })
 
-        if (data.firstname) {
-          data.firstName = req.body.firstName
-        }
-        if (data.lastName) {
-          data.lastName = req.body.lastName
-        }
-        if (data.password) {
-          data.password = hashPassword(req.body.password)
-        }
-
-        const d = await updateStore({ dir: "users", filename: `${phone}.json`, data })
-
-        callback(200, {
-          message: "user updated",
-          body: d,
-        })
-      } catch (error) {
-        return callback(404, {
-          message: "User not found.",
+      if (!valid) {
+        return callback(401, {
+          message: "Unauthorize",
         })
       }
+
+      const data = await readStore({ dir: "users", filename: `${phone}.json` })
+
+      if (data.firstname) {
+        data.firstName = req.body.firstName
+      }
+      if (data.lastName) {
+        data.lastName = req.body.lastName
+      }
+      if (data.password) {
+        data.password = hashPassword(req.body.password)
+      }
+
+      const d = await updateStore({ dir: "users", filename: `${phone}.json`, data })
+
+      callback(200, {
+        message: "user updated",
+        body: d,
+      })
+    } catch (error) {
+      return callback(404, {
+        message: "User not found.",
+      })
     }
 
     // const hashedPassword = hashPassword(req.body.password)
@@ -135,7 +171,21 @@ const controller = {
       })
     }
 
+    if (!validateToken(req.headers.token)) {
+      return callback(400, {
+        message: "Invalid token",
+      })
+    }
+
     try {
+      const valid = await verifyToken({ id: req.headers.token as string, phone: phone as string })
+
+      if (!valid) {
+        return callback(401, {
+          message: "Unauthorize",
+        })
+      }
+
       await deleteStore({ dir: "users", filename: `${phone}.json` })
 
       callback(200, {
