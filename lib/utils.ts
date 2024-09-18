@@ -50,6 +50,14 @@ export function validateToken(v: unknown) {
   return typeof v === "string" && v.trim().length === 20
 }
 
+export function validateArrayOfNumbers(arr: unknown) {
+  if (!Array.isArray(arr)) {
+    return false
+  }
+
+  return arr.every((element) => typeof element === "number")
+}
+
 export function generateId(length = 20) {
   const tokens = "abcdefghijklmnopqrstuvwxyz1234567890"
   let id = ""
