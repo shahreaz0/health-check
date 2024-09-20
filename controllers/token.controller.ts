@@ -1,6 +1,7 @@
 import { createStore, deleteStore, readStore, updateStore } from "../lib/store"
 import {
   generateId,
+  parseToken,
   validatePhone,
   validateString,
   validateToken,
@@ -99,14 +100,11 @@ const controller = {
     }
 
     try {
-      const token = await readStore<Token>({
-        dir: "tokens",
-        filename: `${req.queryParams.id}.json`,
-      })
+      const token = await parseToken(req.queryParams.id)
 
-      if (token.expires < Date.now()) {
+      if (!token) {
         return callback(400, {
-          message: "Token already expired",
+          message: "Enter valid token",
         })
       }
 

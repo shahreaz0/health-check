@@ -83,3 +83,13 @@ export async function verifyToken(opt: { id: string; phone: string }) {
     console.log(error)
   }
 }
+
+export async function parseToken(tokenId: string) {
+  try {
+    const token = await readStore<Token>({ dir: "tokens", filename: `${tokenId}.json` })
+
+    return token
+  } catch (error) {
+    console.log(error)
+  }
+}

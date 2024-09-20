@@ -20,6 +20,7 @@ export async function createStore(options: Options) {
     await fileHandler.writeFile(JSON.stringify(options.data))
 
     await fileHandler.close()
+    return options.data
   } catch (error) {
     // biome-ignore lint/complexity/noUselessCatch: <explanation>
     throw error
@@ -59,6 +60,7 @@ export async function updateStore(options: Options) {
     return options.data
   } catch (error) {
     console.log(error)
+    throw error
   }
 }
 
