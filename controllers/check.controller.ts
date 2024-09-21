@@ -25,7 +25,43 @@ export function checkController(req: Request, callback: ResponseCallBack) {
 }
 
 const controller = {
-  get: async (req: Request, callback: ResponseCallBack) => {},
+  get: async (req: Request, callback: ResponseCallBack) => {
+    if (!req.queryParams.id) {
+      return callback(400, {
+        message: "No id param is given",
+      })
+    }
+
+    if (!validateToken(req.headers.token)) {
+      return callback(400, {
+        message: "Invalid token",
+      })
+    }
+
+    try {
+      const checkData = await readStore({ dir: "checks", filename: `${req.queryParams.id}.json` })
+
+      const valid = await verifyToken({
+        id: req.headers.token as string,
+        phone: checkData.userPhone as string,
+      })
+
+      if (!valid) {
+        return callback(401, {
+          message: "Unauthorize",
+        })
+      }
+
+      callback(200, {
+        message: "success",
+        checkData,
+      })
+    } catch (error) {
+      callback(500, {
+        message: error instanceof Error && error.message,
+      })
+    }
+  },
   post: async (req: Request<Check>, callback: ResponseCallBack) => {
     const protocol =
       validateString(req.body.protocol) && ["https", "http"].includes(req.body.protocol)
