@@ -3,4 +3,5 @@ export type User = {
   lastName: string
   password: string
   phone: string
+  checks?: string[]
 }

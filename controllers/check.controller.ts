@@ -39,7 +39,10 @@ const controller = {
     }
 
     try {
-      const checkData = await readStore({ dir: "checks", filename: `${req.queryParams.id}.json` })
+      const checkData = await readStore<Check>({
+        dir: "checks",
+        filename: `${req.queryParams.id}.json`,
+      })
 
       const valid = await verifyToken({
         id: req.headers.token as string,
@@ -111,13 +114,13 @@ const controller = {
       const checkPayload = {
         id: generateId(20),
         userPhone: user.phone,
-        protocol,
-        method,
-        successCodes,
-        timeoutSeconds,
+        protocol: req.body.protocol,
+        method: req.body.method,
+        successCodes: req.body.successCodes,
+        timeoutSeconds: req.body.timeoutSeconds,
       }
 
-      const checks = await createStore({
+      const checks = await createStore<Check>({
         dir: "checks",
         filename: `${checkPayload.id}.json`,
         data: checkPayload,
@@ -153,7 +156,10 @@ const controller = {
     }
 
     try {
-      const checkData = await readStore({ dir: "checks", filename: `${req.queryParams.id}.json` })
+      const checkData = await readStore<Check>({
+        dir: "checks",
+        filename: `${req.queryParams.id}.json`,
+      })
 
       const valid = await verifyToken({
         id: req.headers.token as string,
