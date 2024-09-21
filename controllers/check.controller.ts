@@ -139,6 +139,118 @@ const controller = {
     }
   },
 
-  put: async (req: Request, callback: ResponseCallBack) => {},
-  delete: async (req: Request, callback: ResponseCallBack) => {},
+  put: async (req: Request, callback: ResponseCallBack) => {
+    if (!req.queryParams.id) {
+      return callback(400, {
+        message: "No id param is given",
+      })
+    }
+
+    if (!validateToken(req.headers.token)) {
+      return callback(400, {
+        message: "Invalid token",
+      })
+    }
+
+    try {
+      const checkData = await readStore({ dir: "checks", filename: `${req.queryParams.id}.json` })
+
+      const valid = await verifyToken({
+        id: req.headers.token as string,
+        phone: checkData.userPhone as string,
+      })
+
+      if (!valid) {
+        return callback(401, {
+          message: "Unauthorize",
+        })
+      }
+
+      const protocol =
+        validateString(req.body.protocol) && ["https", "http"].includes(req.body.protocol)
+
+      const method =
+        validateString(req.body.method) &&
+        ["GET", "POST", "PUT", "DELETE"].includes(req.body.method)
+
+      const successCodes = validateArrayOfNumbers(req.body.successCodes)
+      const timeoutSeconds = Number.isInteger(req.body.timeoutSeconds)
+
+      if ([protocol, method, successCodes, timeoutSeconds].some((e) => !e)) {
+        return callback(400, {
+          message: "Not valid input",
+        })
+      }
+
+      if (req.body.protocol) {
+        checkData.protocol = req.body.protocol
+      }
+
+      if (req.body.method) {
+        checkData.method = req.body.method
+      }
+
+      if (req.body.successCodes.length) {
+        checkData.successCodes = req.body.successCodes
+      }
+
+      if (req.body.timeoutSeconds) {
+        checkData.timeoutSeconds = req.body.timeoutSeconds
+      }
+
+      const updatedCheckData = await updateStore({
+        dir: "checks",
+        filename: `${checkData.id}.json`,
+        data: checkData,
+      })
+
+      callback(200, {
+        message: "success",
+        checkData: updatedCheckData,
+      })
+    } catch (error) {
+      callback(500, {
+        message: error instanceof Error && error.message,
+      })
+    }
+  },
+  delete: async (req: Request, callback: ResponseCallBack) => {
+    if (!req.queryParams.id) {
+      return callback(400, {
+        message: "No id param is given",
+      })
+    }
+
+    if (!validateToken(req.headers.token)) {
+      return callback(400, {
+        message: "Invalid token",
+      })
+    }
+
+    try {
+      const checkData = await readStore({ dir: "checks", filename: `${req.queryParams.id}.json` })
+
+      const valid = await verifyToken({
+        id: req.headers.token as string,
+        phone: checkData.userPhone as string,
+      })
+
+      if (!valid) {
+        return callback(401, {
+          message: "Unauthorize",
+        })
+      }
+
+      await deleteStore({ dir: "checks", filename: `${checkData.id}.json` })
+
+      callback(200, {
+        message: "successfully deleted",
+        checkData,
+      })
+    } catch (error) {
+      callback(500, {
+        message: error instanceof Error && error.message,
+      })
+    }
+  },
 }

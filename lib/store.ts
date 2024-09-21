@@ -73,5 +73,6 @@ export async function deleteStore(options: Omit<Options, "data"> = {}) {
     await fs.unlink(filePath)
   } catch (error) {
     console.log(error)
+    throw error
   }
 }
