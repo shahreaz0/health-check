@@ -234,7 +234,10 @@ const controller = {
     }
 
     try {
-      const checkData = await readStore({ dir: "checks", filename: `${req.queryParams.id}.json` })
+      const checkData = await readStore<Check>({
+        dir: "checks",
+        filename: `${req.queryParams.id}.json`,
+      })
 
       const valid = await verifyToken({
         id: req.headers.token as string,
@@ -246,6 +249,19 @@ const controller = {
           message: "Unauthorize",
         })
       }
+
+      const user = await readStore<User>({ dir: "users", filename: `${checkData.userPhone}.json` })
+
+      const updatedUser = {
+        ...user,
+        checks: user.checks?.filter((id) => id !== req.queryParams.id),
+      }
+
+      await updateStore({
+        dir: "users",
+        filename: `${checkData.userPhone}.json`,
+        data: updatedUser,
+      })
 
       await deleteStore({ dir: "checks", filename: `${checkData.id}.json` })
 
