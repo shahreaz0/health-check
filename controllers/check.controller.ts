@@ -252,15 +252,12 @@ const controller = {
 
       const user = await readStore<User>({ dir: "users", filename: `${checkData.userPhone}.json` })
 
-      const updatedUser = {
-        ...user,
-        checks: user.checks?.filter((id) => id !== req.queryParams.id),
-      }
+      user.checks = user.checks?.filter((id) => id !== req.queryParams.id)
 
       await updateStore({
         dir: "users",
         filename: `${checkData.userPhone}.json`,
-        data: updatedUser,
+        data: user,
       })
 
       await deleteStore({ dir: "checks", filename: `${checkData.id}.json` })

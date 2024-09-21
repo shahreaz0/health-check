@@ -4,7 +4,10 @@ import { notFound } from "./controllers/error.controller"
 import { cleanPath } from "./lib/utils"
 import { routes } from "./routes"
 
+import { sendSms } from "./lib/notification"
 import type { App } from "./types/server..type"
+
+// sendSms({ to: "+8801844668099", message: "hello" })
 
 const app: App = {}
 
