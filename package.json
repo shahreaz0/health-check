@@ -2,7 +2,7 @@
   "name": "health-check",
   "version": "0.0.1",
   "description": "Uptime monitoring service",
-  "main": "server.ts",
+  "main": "app.ts",
   "type": "module",
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
@@ -11,7 +11,7 @@
     "typescript": "^5.5.4"
   },
   "scripts": {
-    "dev": "tsx --watch server.ts",
+    "dev": "tsx --watch app.ts",
     "typecheck": "tsc --noEmit"
   },
   "keywords": ["uptime", "monitor"],

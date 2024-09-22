@@ -1,25 +1,15 @@
 import http from "node:http"
-import { env } from "./configs/env"
-import { notFound } from "./controllers/error.controller"
-import { cleanPath } from "./lib/utils"
-import { routes } from "./routes"
+import { env } from ".././configs/env"
+import { notFound } from ".././controllers/error.controller"
+import { cleanPath } from ".././lib/utils"
+import { routes } from ".././routes"
 
-import { sendSms } from "./lib/notification"
-import type { App } from "./types/server..type"
-
-// sendSms({ to: "+8801844668099", message: "hello" })
-
-const app: App = {}
-
-app.createServer = () => {
-  const server = http.createServer(app.requestHandler)
-
-  server.listen(env.get("port"), () => {
-    console.log(`http://localhost:${env.get("port")}`)
-  })
+type Req = http.IncomingMessage
+type Res = http.ServerResponse<http.IncomingMessage> & {
+  req: http.IncomingMessage
 }
 
-app.requestHandler = (req, res) => {
+function requestHandler(req: Req, res: Res) {
   const url = new URL(`http://${process.env.HOST ?? "localhost"}${req.url}`)
   const cleanPathname = cleanPath(url.pathname)
   const queryParams = Object.fromEntries(url.searchParams)
@@ -56,4 +46,10 @@ app.requestHandler = (req, res) => {
   })
 }
 
-app.createServer()
+export function createServer() {
+  const server = http.createServer(requestHandler)
+
+  server.listen(env.get("port"), () => {
+    console.log(`http://localhost:${env.get("port")}`)
+  })
+}
