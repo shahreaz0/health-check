@@ -8,13 +8,16 @@
     "@biomejs/biome": "1.8.3",
     "@types/node": "^22.5.4",
     "tsx": "^4.19.0",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.2"
   },
   "scripts": {
     "dev": "tsx --watch app.ts",
     "typecheck": "tsc --noEmit"
   },
-  "keywords": ["uptime", "monitor"],
+  "keywords": [
+    "uptime",
+    "monitor"
+  ],
   "author": "shahreaz",
   "license": "ISC"
 }

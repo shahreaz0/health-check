@@ -3,6 +3,7 @@ import {
   generateId,
   parseToken,
   validateArrayOfNumbers,
+  validateHttpUrl,
   validatePhone,
   validateString,
   validateToken,
@@ -66,16 +67,14 @@ const controller = {
     }
   },
   post: async (req: Request<Check>, callback: ResponseCallBack) => {
-    const protocol =
-      validateString(req.body.protocol) && ["https", "http"].includes(req.body.protocol)
-
+    const url = validateHttpUrl(req.body.url)
     const method =
       validateString(req.body.method) && ["GET", "POST", "PUT", "DELETE"].includes(req.body.method)
 
     const successCodes = validateArrayOfNumbers(req.body.successCodes)
     const timeoutSeconds = Number.isInteger(req.body.timeoutSeconds)
 
-    if ([protocol, method, successCodes, timeoutSeconds].every((e) => !e)) {
+    if ([url, method, successCodes, timeoutSeconds].every((e) => !e)) {
       return callback(400, {
         message: "Not valid input",
       })
@@ -114,7 +113,7 @@ const controller = {
       const checkPayload = {
         id: generateId(20),
         userPhone: user.phone,
-        protocol: req.body.protocol,
+        url: req.body.url,
         method: req.body.method,
         successCodes: req.body.successCodes,
         timeoutSeconds: req.body.timeoutSeconds,
@@ -142,7 +141,7 @@ const controller = {
     }
   },
 
-  put: async (req: Request, callback: ResponseCallBack) => {
+  put: async (req: Request<Partial<Check>>, callback: ResponseCallBack) => {
     if (!req.queryParams.id) {
       return callback(400, {
         message: "No id param is given",
@@ -172,31 +171,30 @@ const controller = {
         })
       }
 
-      const protocol =
-        validateString(req.body.protocol) && ["https", "http"].includes(req.body.protocol)
-
-      const method =
-        validateString(req.body.method) &&
-        ["GET", "POST", "PUT", "DELETE"].includes(req.body.method)
+      const url = validateHttpUrl(req.body.url)
 
       const successCodes = validateArrayOfNumbers(req.body.successCodes)
       const timeoutSeconds = Number.isInteger(req.body.timeoutSeconds)
 
-      if ([protocol, method, successCodes, timeoutSeconds].some((e) => !e)) {
+      const method =
+        validateString(req.body.method) &&
+        ["GET", "POST", "PUT", "DELETE"].includes(req.body.method as string)
+
+      if ([url, method, successCodes, timeoutSeconds].some((e) => !e)) {
         return callback(400, {
           message: "Not valid input",
         })
       }
 
-      if (req.body.protocol) {
-        checkData.protocol = req.body.protocol
+      if (req.body.url) {
+        checkData.url = req.body.url
       }
 
       if (req.body.method) {
         checkData.method = req.body.method
       }
 
-      if (req.body.successCodes.length) {
+      if (req.body.successCodes?.length) {
         checkData.successCodes = req.body.successCodes
       }
 

@@ -56,6 +56,17 @@ export function validateArrayOfNumbers(arr: unknown) {
   return arr.every((element) => typeof element === "number")
 }
 
+export function validateHttpUrl(url: unknown) {
+  if (typeof url !== "string") return false
+
+  try {
+    const parsedURL = new URL(url)
+    return parsedURL.protocol === "http:" || parsedURL.protocol === "https:"
+  } catch (_) {
+    return false
+  }
+}
+
 export function generateId(length = 20) {
   const tokens = "abcdefghijklmnopqrstuvwxyz1234567890"
   let id = ""

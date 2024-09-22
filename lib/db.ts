@@ -84,3 +84,15 @@ export async function remove(options: Omit<Options, "data">) {
     throw error
   }
 }
+
+export async function getList(dir: string) {
+  try {
+    const dirPath = path.join(import.meta.dirname, "..", ".data", dir)
+
+    const a = await fs.readdir(dirPath)
+
+    return a.map((e) => e.replace(".json", ""))
+  } catch (_error) {
+    return []
+  }
+}
