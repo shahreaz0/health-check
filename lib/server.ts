@@ -46,10 +46,14 @@ function requestHandler(req: Req, res: Res) {
   })
 }
 
-export function createServer() {
+function createServer() {
   const server = http.createServer(requestHandler)
 
   server.listen(env.get("port"), () => {
     console.log(`http://localhost:${env.get("port")}`)
   })
+}
+
+export function initServer() {
+  createServer()
 }

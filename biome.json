@@ -11,7 +11,7 @@
         "noBannedTypes": "off"
       },
       "suspicious": {
-        "noExplicitAny": "warn"
+        "noExplicitAny": "off"
       }
     }
   },

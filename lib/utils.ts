@@ -1,12 +1,10 @@
 import { pbkdf2Sync, randomBytes } from "node:crypto"
 import type { Token } from "../types/token.type."
-import { readStore } from "./store"
+import * as document from "./db"
 
 export function cleanPath(pathname: string) {
-  // Step 1: Replace multiple consecutive slashes with a single slash
   let cleanedPath = pathname.replace(/\/{2,}/g, "/")
 
-  // Step 2: Remove trailing slash at the end (if it's not the root '/')
   if (cleanedPath !== "/") {
     cleanedPath = cleanedPath.replace(/\/$/, "")
   }
@@ -71,7 +69,7 @@ export function generateId(length = 20) {
 
 export async function verifyToken(opt: { id: string; phone: string }) {
   try {
-    const token = await readStore<Token>({ dir: "tokens", filename: `${opt.id}.json` })
+    const token = await document.read<Token>({ dir: "tokens", filename: `${opt.id}.json` })
 
     if (token.phone === opt.phone && token.expires > Date.now()) {
       return true
@@ -86,7 +84,7 @@ export async function verifyToken(opt: { id: string; phone: string }) {
 
 export async function parseToken(tokenId: string) {
   try {
-    const token = await readStore<Token>({ dir: "tokens", filename: `${tokenId}.json` })
+    const token = await document.read<Token>({ dir: "tokens", filename: `${tokenId}.json` })
 
     return token
   } catch (error) {

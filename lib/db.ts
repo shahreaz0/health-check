@@ -8,7 +8,7 @@ type Options = {
   filename: string
 }
 
-export async function createStore<T = any>(options: Options) {
+export async function create<T = any>(options: Options) {
   try {
     const dir = options.dir
     const filename = options.filename
@@ -33,7 +33,7 @@ export async function createStore<T = any>(options: Options) {
   }
 }
 
-export async function readStore<T = any>(options: Omit<Options, "data">) {
+export async function read<T = any>(options: Omit<Options, "data">) {
   try {
     const dir = options.dir
     const filename = options.filename
@@ -49,7 +49,7 @@ export async function readStore<T = any>(options: Omit<Options, "data">) {
   }
 }
 
-export async function updateStore<T = any>(options: Options) {
+export async function update<T = any>(options: Options) {
   try {
     const dir = options.dir
     const filename = options.filename
@@ -71,7 +71,7 @@ export async function updateStore<T = any>(options: Options) {
   }
 }
 
-export async function deleteStore(options: Omit<Options, "data">) {
+export async function remove(options: Omit<Options, "data">) {
   try {
     const dir = options.dir
     const filename = options.filename

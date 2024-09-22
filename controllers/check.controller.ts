@@ -1,4 +1,4 @@
-import { createStore, deleteStore, readStore, updateStore } from "../lib/store"
+import * as document from "../lib/db"
 import {
   generateId,
   parseToken,
@@ -39,7 +39,7 @@ const controller = {
     }
 
     try {
-      const checkData = await readStore<Check>({
+      const checkData = await document.read<Check>({
         dir: "checks",
         filename: `${req.queryParams.id}.json`,
       })
@@ -103,7 +103,7 @@ const controller = {
         })
       }
 
-      const user = await readStore({ dir: "users", filename: `${token.phone}.json` })
+      const user = await document.read({ dir: "users", filename: `${token.phone}.json` })
 
       if (user?.checks?.length > 5) {
         return callback(401, {
@@ -120,7 +120,7 @@ const controller = {
         timeoutSeconds: req.body.timeoutSeconds,
       }
 
-      const checks = await createStore<Check>({
+      const checks = await document.create<Check>({
         dir: "checks",
         filename: `${checkPayload.id}.json`,
         data: checkPayload,
@@ -130,7 +130,7 @@ const controller = {
 
       user.checks = [...userChecks, checkPayload.id]
 
-      await updateStore({ dir: "users", filename: `${user.phone}.json`, data: user })
+      await document.update({ dir: "users", filename: `${user.phone}.json`, data: user })
 
       callback(200, {
         message: checks,
@@ -156,7 +156,7 @@ const controller = {
     }
 
     try {
-      const checkData = await readStore<Check>({
+      const checkData = await document.read<Check>({
         dir: "checks",
         filename: `${req.queryParams.id}.json`,
       })
@@ -204,7 +204,7 @@ const controller = {
         checkData.timeoutSeconds = req.body.timeoutSeconds
       }
 
-      const updatedCheckData = await updateStore({
+      const updatedCheckData = await document.update({
         dir: "checks",
         filename: `${checkData.id}.json`,
         data: checkData,
@@ -234,7 +234,7 @@ const controller = {
     }
 
     try {
-      const checkData = await readStore<Check>({
+      const checkData = await document.read<Check>({
         dir: "checks",
         filename: `${req.queryParams.id}.json`,
       })
@@ -250,17 +250,20 @@ const controller = {
         })
       }
 
-      const user = await readStore<User>({ dir: "users", filename: `${checkData.userPhone}.json` })
+      const user = await document.read<User>({
+        dir: "users",
+        filename: `${checkData.userPhone}.json`,
+      })
 
       user.checks = user.checks?.filter((id) => id !== req.queryParams.id)
 
-      await updateStore({
+      await document.update({
         dir: "users",
         filename: `${checkData.userPhone}.json`,
         data: user,
       })
 
-      await deleteStore({ dir: "checks", filename: `${checkData.id}.json` })
+      await document.remove({ dir: "checks", filename: `${checkData.id}.json` })
 
       callback(200, {
         message: "successfully deleted",

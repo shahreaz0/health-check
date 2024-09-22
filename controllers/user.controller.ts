@@ -1,4 +1,4 @@
-import { createStore, deleteStore, readStore, updateStore } from "../lib/store"
+import * as document from "../lib/db"
 import {
   hashPassword,
   validatePhone,
@@ -44,7 +44,7 @@ const controller = {
         })
       }
 
-      const data = await readStore({ dir: "users", filename: `${phone}.json` })
+      const data = await document.read({ dir: "users", filename: `${phone}.json` })
 
       const { password, ...rest } = data
 
@@ -78,7 +78,7 @@ const controller = {
 
     const { password, ...rest } = req.body
 
-    await createStore({
+    await document.create({
       dir: "users",
       filename: `${req.body.phone}.json`,
       data: { ...rest, password: hashedPassword },
@@ -128,7 +128,7 @@ const controller = {
         })
       }
 
-      const data = await readStore({ dir: "users", filename: `${phone}.json` })
+      const data = await document.read({ dir: "users", filename: `${phone}.json` })
 
       if (data.firstname) {
         data.firstName = req.body.firstName
@@ -140,7 +140,7 @@ const controller = {
         data.password = hashPassword(req.body.password)
       }
 
-      const d = await updateStore({ dir: "users", filename: `${phone}.json`, data })
+      const d = await document.update({ dir: "users", filename: `${phone}.json`, data })
 
       callback(200, {
         message: "user updated",
@@ -186,7 +186,7 @@ const controller = {
         })
       }
 
-      await deleteStore({ dir: "users", filename: `${phone}.json` })
+      await document.remove({ dir: "users", filename: `${phone}.json` })
 
       callback(200, {
         message: "user deleted",

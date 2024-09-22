@@ -6,4 +6,6 @@ function loop() {
   }, 1000 * 60)
 }
 
-export function startWorker() {}
+export function initWorker() {
+  //   loop()
+}

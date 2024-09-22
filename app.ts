@@ -1,8 +1,9 @@
-import { sendSms } from "./lib/notification"
-import { createServer } from "./lib/server"
+import { initServer } from "./lib/server"
+import { initWorker } from "./lib/worker"
 
 function init() {
-  createServer()
+  initServer()
+  initWorker()
 }
 
 init()

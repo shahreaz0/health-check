@@ -1,4 +1,4 @@
-import { createStore, deleteStore, readStore, updateStore } from "../lib/store"
+import * as document from "../lib/db"
 import {
   generateId,
   parseToken,
@@ -32,7 +32,7 @@ const controller = {
     }
 
     try {
-      const data = await readStore({ dir: "tokens", filename: `${token}.json` })
+      const data = await document.read({ dir: "tokens", filename: `${token}.json` })
 
       callback(200, {
         data,
@@ -61,7 +61,7 @@ const controller = {
     }
 
     try {
-      const user = await readStore<User>({ dir: "users", filename: `${req.body.phone}.json` })
+      const user = await document.read<User>({ dir: "users", filename: `${req.body.phone}.json` })
 
       if (!verifyPassword(req.body.password, user.password)) {
         return callback(400, { message: "phone or password is incorrect" })
@@ -76,7 +76,7 @@ const controller = {
         phone: user.phone,
       }
 
-      await createStore({ data: token, dir: "tokens", filename: `${tokenId}.json` })
+      await document.create({ data: token, dir: "tokens", filename: `${tokenId}.json` })
 
       callback(200, {
         message: "token created",
@@ -110,7 +110,7 @@ const controller = {
 
       token.expires = Date.now() + 60 * 60 * 1000
 
-      const newToken = await updateStore({
+      const newToken = await document.update({
         dir: "tokens",
         filename: `${req.queryParams.id}.json`,
         data: token,
@@ -134,7 +134,7 @@ const controller = {
     }
 
     try {
-      await deleteStore({ dir: "token", filename: `${id}.json` })
+      await document.remove({ dir: "token", filename: `${id}.json` })
 
       callback(200, {
         message: "token deleted",
