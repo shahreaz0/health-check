@@ -1,1 +1,1 @@
-{"id":"6uny2pbhkfdnry94jxmq","userPhone":"11111111111","url":"https://jsonplaceholder.typicode.com/users?_limit=4","method":"GET","successCodes":[200,201],"timeoutSeconds":2}
+{"id":"6uny2pbhkfdnry94jxmq","userPhone":"11111111111","url":"https://jsonplaceholder.typicode.com/users","method":"GET","successCodes":[200,201],"timeoutSeconds":2,"state":"up","lastChecked":1727035324602}
