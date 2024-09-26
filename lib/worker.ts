@@ -21,6 +21,8 @@ async function performCheck(check: Check) {
       const message = `Your check for ${check.url} is currently ${check.state}`
 
       console.log({ to: check.userPhone, message })
+
+      // sendSms({to: check.userPhone, message})
     }
   } catch (error) {
     console.log(error)
@@ -70,7 +72,7 @@ async function gatherAllChecks() {
 function loop() {
   setInterval(() => {
     gatherAllChecks()
-  }, 1000 * 10)
+  }, 1000 * 60)
 }
 
 export function initWorker() {
